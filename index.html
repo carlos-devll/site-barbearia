@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Agendamento - Francisco Cabeleireiro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background: radial-gradient(circle at top,#0a0a0a,#000000);
+
+height:100vh;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+color:white;
+
+}
+
+/* CONTAINER */
+
+.container{
+
+width:420px;
+
+padding:40px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,0.03);
+
+backdrop-filter:blur(10px);
+
+border:1px solid rgba(255,215,0,0.4);
+
+box-shadow:
+0 0 20px rgba(255,215,0,0.3),
+0 0 60px rgba(255,215,0,0.1);
+
+transition:0.4s;
+
+}
+
+.container:hover{
+
+transform:translateY(-5px);
+
+}
+
+/* LOGO */
+
+.logo{
+
+display:block;
+
+margin:auto;
+
+width:180px;
+
+margin-bottom:10px;
+
+}
+
+/* TITULO */
+
+.titulo{
+
+text-align:center;
+
+font-size:26px;
+
+font-weight:700;
+
+background:linear-gradient(90deg,#FFD700,#ffcc00);
+
+-webkit-background-clip:text;
+
+color:transparent;
+
+margin-bottom:5px;
+
+}
+
+.sub{
+
+text-align:center;
+
+color:#aaa;
+
+margin-bottom:20px;
+
+}
+
+/* LABEL */
+
+label{
+
+color:#FFD700;
+
+font-weight:500;
+
+margin-top:12px;
+
+display:block;
+
+}
+
+/* INPUT */
+
+input,select{
+
+width:100%;
+
+padding:12px;
+
+border-radius:10px;
+
+border:1px solid rgba(255,215,0,0.3);
+
+background:rgba(255,255,255,0.05);
+
+color:white;
+
+margin-top:5px;
+
+transition:0.3s;
+
+}
+
+input:focus,select:focus{
+
+outline:none;
+
+border:1px solid #FFD700;
+
+box-shadow:0 0 10px rgba(255,215,0,0.6);
+
+}
+
+/* VALOR */
+
+#valor{
+
+margin-top:8px;
+
+text-align:right;
+
+color:#FFD700;
+
+font-weight:600;
+
+}
+
+/* HORARIOS */
+
+#horarios{
+
+margin-top:20px;
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:10px;
+
+}
+
+.hora{
+
+padding:10px;
+
+text-align:center;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-weight:600;
+
+background:rgba(255,255,255,0.05);
+
+border:1px solid rgba(255,215,0,0.3);
+
+transition:0.3s;
+
+}
+
+.hora:hover{
+
+background:#FFD700;
+
+color:black;
+
+transform:scale(1.05);
+
+}
+
+.reservado{
+
+background:#ff4d4d;
+
+opacity:0.6;
+
+cursor:not-allowed;
+
+}
+
+/* BOTAO */
+
+.botao{
+
+margin-top:25px;
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:10px;
+
+font-weight:bold;
+
+font-size:16px;
+
+color:black;
+
+background:linear-gradient(90deg,#FFD700,#ffcc00);
+
+cursor:pointer;
+
+transition:0.3s;
+
+box-shadow:0 0 15px rgba(255,215,0,0.6);
+
+}
+
+.botao:hover{
+
+transform:scale(1.05);
+
+box-shadow:0 0 25px rgba(255,215,0,0.9);
+
+}select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #FFD700;
+    background-color: #1c1c1c;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+select option {
+    background-color: #1c1c1c;
+    color: white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="https://i.postimg.cc/jjFqV2LC/Barbearia-removebg-preview-1.png" class="logo">
+
+<h1 class="titulo">Agendamento</h1>
+
+<p class="sub">Escolha o melhor horário</p>
+
+<label>Nome</label>
+<input type="text" id="nome" placeholder="Seu nome completo">
+
+<label>Telefone</label>
+<input type="text" id="telefone" placeholder="(DDD) 90000-0000">
+
+<label>Serviço</label>
+<select id="servico" onchange="atualizarValor()">
+<option value="">Selecione</option>
+<option value="10">Acabamento (Pezinho) - R$10</option>
+<option value="25">Corte de cabelo - R$25</option>
+<option value="30">Cabelo + Barba - R$30</option>
+</select>
+
+<div id="valor"></div>
+
+<label>Selecione o dia</label>
+<input type="text" id="data">
+
+<div id="horarios"></div>
+
+<button class="botao" onclick="confirmarAgendamento()">Confirmar Agendamento</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+
+const dataInput = document.getElementById("data")
+const horariosDiv = document.getElementById("horarios")
+const valorDiv = document.getElementById("valor")
+const servicoSelect = document.getElementById("servico")
+
+const horariosFixos = {
+segunda:["09:30","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"],
+sabado:["08:30","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"]
+}
+
+flatpickr(dataInput,{
+dateFormat:"Y-m-d",
+minDate:"today",
+locale:"pt",
+disable:[date=>date.getDay()===0],
+onChange:(selectedDates,dateStr)=>mostrarHorarios(dateStr)
+})
+
+function atualizarValor(){
+
+const valor = servicoSelect.value
+
+valorDiv.textContent = valor ? `Valor: R$ ${Number(valor).toFixed(2)}` : ""
+
+}
+
+function mostrarHorarios(data){
+
+horariosDiv.innerHTML=""
+
+const dia = new Date(data).getDay()
+
+const horarios = (dia===6) ? horariosFixos.sabado : horariosFixos.segunda
+
+horarios.forEach(hora=>{
+
+const div = document.createElement("div")
+
+div.textContent = hora
+
+div.classList.add("hora")
+
+div.onclick = ()=>selecionarHorario(div)
+
+horariosDiv.appendChild(div)
+
+})
+
+}
+
+let horarioSelecionado=null
+
+function selecionarHorario(div){
+
+document.querySelectorAll(".hora").forEach(el=>el.style.outline="none")
+
+div.style.outline="2px solid #FFD700"
+
+horarioSelecionado=div.textContent
+
+}
+
+function confirmarAgendamento(){
+
+const nome = document.getElementById("nome").value
+const telefone = document.getElementById("telefone").value
+const servico = servicoSelect.options[servicoSelect.selectedIndex].text
+const valor = servicoSelect.value
+const data = dataInput.value
+
+if(!nome || !telefone || !servico || !data || !horarioSelecionado){
+
+alert("Preencha todos os campos!")
+
+return
+
+}
+
+alert(`Agendamento confirmado
+
+Cliente: ${nome}
+Data: ${data}
+Horário: ${horarioSelecionado}
+Serviço: ${servico}
+Valor: R$ ${Number(valor).toFixed(2)}`)
+}
+</script>
+
+</body>
+</html>
